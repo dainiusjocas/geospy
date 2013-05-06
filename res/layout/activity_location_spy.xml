@@ -9,17 +9,27 @@
     tools:context=".LocationSpy" >
 
     <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/hello_world" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/button2"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_marginBottom="24dp"
+        android:text="@string/check_network" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button3"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="36dp"
-        android:text="Super" />
+        android:layout_marginBottom="42dp"
+        android:text="@string/get_location" />
 
 </RelativeLayout>

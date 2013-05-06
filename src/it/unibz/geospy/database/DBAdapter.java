@@ -156,7 +156,7 @@ public class DBAdapter {
 		if (!aCursor.moveToFirst()) {
     		aCursor.close();
         	this.close();
-    		return null;
+    		return locations;
     	}
     	do {
     		locations.add(new LocationObject(anIMEI, aCursor.getString(0), 
@@ -164,6 +164,22 @@ public class DBAdapter {
     	} while (aCursor.moveToNext());
     	aCursor.close();
     	this.close();
+    	markAllSynced();
     	return locations;
+	}
+	
+	/**
+	 * Marks all the rows that are in sync now. This method should be invoked
+	 * when all the unsynced data has been synced.
+	 */
+	private void markAllSynced() {
+		ContentValues updateValues = new ContentValues();
+		updateValues.put(LOCATION_IS_SYNC, "1");
+		this.open();
+		mDb.update(LOCATION_TABLE_TITLE,
+				updateValues, 
+				"LOCATION_IS_SYNC = 1", 
+				null);
+		this.close();
 	}
 }
