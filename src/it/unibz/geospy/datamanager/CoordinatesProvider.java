@@ -70,7 +70,7 @@ public class CoordinatesProvider {
 					for (LocationObject aLocation : locations) {
 						LocationSender.sendLocation(aLocation);
 					}
-					Toast.makeText(context, "Network is awailable", Toast.LENGTH_LONG).show();
+					Toast.makeText(context, "Network is available", Toast.LENGTH_LONG).show();
 				} else {
 					// no network connection. store location in the DB.
 					aDBAdapter.storeLocation(modifiedLatitude,

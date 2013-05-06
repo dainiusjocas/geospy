@@ -27,7 +27,7 @@ public class LocationObject {
 			String pTimestamp) {
 		this.imei = pIMEI;
 		this.latitude = pLatitude;
-		this.latitude = pLongitude;
+		this.longitude = pLongitude;
 		this.timestamp = pTimestamp;
 	}
 	

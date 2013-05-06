@@ -39,21 +39,19 @@ public class LocationSpy extends Activity {
         		new CoordinatesProvider(this.getApplicationContext());
         final Context aContext = this.getApplicationContext();
         
-        final Button button_locaton = (Button) findViewById(R.id.button2);
-        button_locaton.setOnClickListener(new View.OnClickListener() {
+        /*
+         * Get the latest location 
+         */
+        final Button button_location = (Button) findViewById(R.id.button2);
+        button_location.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	String anIMEI = IMEIProvider.getIMEI(aContext);
           
             	Location aLocation = CoordinatesProvider.getLocation();
             	String latitude = String.valueOf(aLocation.getLatitude());
             	String longitude = String.valueOf(aLocation.getLongitude());
-            	Toast.makeText(aContext, anIMEI + "|" + latitude + "|" + longitude, Toast.LENGTH_LONG).show();
-            	
-                // Perform action on click
-//            	DBAdapter aDBAdapter = new DBAdapter(aContext);
-//            	ArrayList<LocationObject> locations =
-//            			aDBAdapter.getListOfNotSyncedLocations();
-//            	Log.e("DAINIUS", locations.get(0).getIMEI() + " | " + locations.get(0).getLatitude() + " | ");
+            	Toast.makeText(aContext, anIMEI + "|" + latitude + "|" + 
+            			longitude, Toast.LENGTH_LONG).show();
             }
         });
         
@@ -68,7 +66,6 @@ public class LocationSpy extends Activity {
             	String message = "Network is ";
             	if (networkAvailable) {
             		message = message + "available";
-//                	LocationSender.soapTest(aContext);
                 	String anIMEI = IMEIProvider.getIMEI(aContext);
                     
                 	Location aLocation = CoordinatesProvider.getLocation();

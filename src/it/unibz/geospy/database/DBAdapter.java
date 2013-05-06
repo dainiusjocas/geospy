@@ -11,11 +11,12 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.location.Location;
+import android.util.Log;
 
 public class DBAdapter {
 
 	public static final String DATABASE_NAME = "geospydb";
-	public static final int DATABASE_VERSION = 1;
+	public static final int DATABASE_VERSION = 2;
 	
 	private final static String TAG = "DBAdapter";
 	private DatabaseHelper mDbHelper;
@@ -164,6 +165,9 @@ public class DBAdapter {
     	} while (aCursor.moveToNext());
     	aCursor.close();
     	this.close();
+    	if (aCursor.isClosed()) {
+    		Log.e("Dainius", "Cursor is closed");
+    	}
     	markAllSynced();
     	return locations;
 	}
@@ -173,13 +177,15 @@ public class DBAdapter {
 	 * when all the unsynced data has been synced.
 	 */
 	private void markAllSynced() {
+		Log.e("DAINIUS", "markAllSynced");
 		ContentValues updateValues = new ContentValues();
+		String[] whereArgs = {"0"};
 		updateValues.put(LOCATION_IS_SYNC, "1");
 		this.open();
 		mDb.update(LOCATION_TABLE_TITLE,
 				updateValues, 
-				"LOCATION_IS_SYNC = 1", 
-				null);
+				"LOCATION_IS_SYNC=?", 
+				whereArgs);
 		this.close();
 	}
 }
