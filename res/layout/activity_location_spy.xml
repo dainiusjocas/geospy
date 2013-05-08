@@ -32,4 +32,24 @@
         android:layout_marginBottom="42dp"
         android:text="@string/get_location" />
 
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button1"
+        android:layout_alignBottom="@+id/button1"
+        android:layout_alignRight="@+id/textView1"
+        android:layout_marginRight="31dp"
+        android:text="@string/stop_spying" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button3"
+        android:layout_alignLeft="@+id/button3"
+        android:layout_marginBottom="82dp"
+        android:layout_marginLeft="22dp"
+        android:text="@string/start_spying" />
+
 </RelativeLayout>

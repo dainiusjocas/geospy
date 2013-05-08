@@ -1,5 +1,6 @@
 package it.unibz.geospy.sender;
 
+import it.unibz.geospy.GeoSpy;
 import it.unibz.geospy.datamanager.LocationObject;
 
 import org.ksoap2.SoapEnvelope;
@@ -7,9 +8,7 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
-import org.ksoap2.serialization.PropertyInfo;
 
-import android.content.Context;
 import android.widget.Toast;
 
 public class LocationSender {
@@ -22,6 +21,7 @@ public class LocationSender {
 	private static String URL= 
 			"http://10.7.153.98:8080/geospy_web/services/StoreLocationService?wsdl";
 	private static final String METHOD_NAME = "storeLocation";
+	private static final String GET_INTERVAL= "getInterval";
 	private static final String SOAP_ACTION = 
 			"http://10.7.153.98:8080/geospy_web/storeLocation";
 	
@@ -43,13 +43,39 @@ public class LocationSender {
 		HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
 		try {
 			androidHttpTransport.call(SOAP_ACTION, envelope);
-			SoapPrimitive  resultsRequestSOAP =
+			SoapPrimitive resultsRequestSOAP =
 					(SoapPrimitive) envelope.getResponse();
 		} catch(Exception e) {
 			// Probably server is down.
 			e.printStackTrace();
 		}
 		return true;
+	}
+	
+	/**
+	 * request server for interval in milliseconds during which there should be
+	 * no Location updates.
+	 * @return
+	 */
+	public static int getInterval() {
+		// minimal time between updates
+		int interval = 60001; 
+		SoapObject request = new SoapObject(NAMESPACE, GET_INTERVAL);
+		SoapSerializationEnvelope envelope = 
+				new SoapSerializationEnvelope(SoapEnvelope.VER11); 
+		envelope.setOutputSoapObject(request);
+		HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
+		try {
+			androidHttpTransport.call(SOAP_ACTION, envelope);
+			SoapPrimitive  resultsRequestSOAP =
+					(SoapPrimitive) envelope.getResponse();
+			Integer tempInterval = Integer.parseInt(resultsRequestSOAP.toString());
+			interval = tempInterval.intValue();
+		} catch(Exception e) {
+			// Probably server is down.
+			e.printStackTrace();
+		}
+		return interval;
 	}
 
 }

@@ -1,27 +1,20 @@
 package it.unibz.geospy;
 
-import java.util.ArrayList;
-
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-import it.unibz.geospy.R;
-import it.unibz.geospy.database.DBAdapter;
 import it.unibz.geospy.datamanager.CoordinatesProvider;
 import it.unibz.geospy.datamanager.IMEIProvider;
 import it.unibz.geospy.datamanager.LocationObject;
 import it.unibz.geospy.sender.LocationSender;
 import it.unibz.geospy.sender.NetworkManager;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 /**
  * Main activity of an Application. When this activity is turned on the spying 
@@ -35,10 +28,37 @@ public class LocationSpy extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_spy);
-        final CoordinatesProvider aCoordinatesProvider = 
-        		new CoordinatesProvider(this.getApplicationContext());
+        CoordinatesProvider.startUpdates();
         final Context aContext = this.getApplicationContext();
         
+        /*
+         * Start spying
+         */
+        final Button aStartButton = (Button) findViewById(R.id.button1);
+        aStartButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				CoordinatesProvider.startUpdates();
+				Toast.makeText(aContext,
+						"Spying started", 
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+        /*
+         * Stop spying button
+         */
+        final Button aStopButton = (Button) findViewById(R.id.button4);
+        aStopButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				CoordinatesProvider.stopUpdates();
+				Toast.makeText(getApplicationContext(), 
+		    			"To conserve battery you may want to manage location services",
+		    			Toast.LENGTH_SHORT).show();
+			}
+		});
         /*
          * Get the latest location 
          */
@@ -51,7 +71,7 @@ public class LocationSpy extends Activity {
             	String latitude = String.valueOf(aLocation.getLatitude());
             	String longitude = String.valueOf(aLocation.getLongitude());
             	Toast.makeText(aContext, anIMEI + "|" + latitude + "|" + 
-            			longitude, Toast.LENGTH_LONG).show();
+            			longitude, Toast.LENGTH_SHORT).show();
             }
         });
         
@@ -78,7 +98,8 @@ public class LocationSpy extends Activity {
             	} else {
             		message = message + " not available";
             	}
-            	Toast.makeText(aContext, message, Toast.LENGTH_LONG).show();
+            	message = message + "|" + LocationSender.getInterval();
+            	Toast.makeText(aContext, message, Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -110,12 +131,11 @@ public class LocationSpy extends Activity {
     /**
      * Exiting the Acivity
      */
-    public void onDestroy() {
+/*    public void onDestroy() {
     	super.onDestroy();
-    	CoordinatesProvider.stopUpdates();
     	Toast.makeText(getApplicationContext(), 
     			"To conserve battery you may want to manage location services",
     			Toast.LENGTH_LONG).show();
-    }
+    }*/
     
 }

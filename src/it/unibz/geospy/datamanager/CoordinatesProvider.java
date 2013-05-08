@@ -2,6 +2,7 @@ package it.unibz.geospy.datamanager;
 
 import java.util.ArrayList;
 
+import it.unibz.geospy.GeoSpy;
 import it.unibz.geospy.database.DBAdapter;
 import it.unibz.geospy.sender.LocationSender;
 import it.unibz.geospy.sender.NetworkManager;
@@ -19,24 +20,25 @@ import android.widget.Toast;
  */
 public class CoordinatesProvider {
 
-	private static Context context;
-	private static LocationManager locationManager;
-	private static LocationListener locationListener;
+	private static Context mContext;
+	private static LocationManager mLocationManager;
+	private static LocationListener mLocationListener;
 
 	/**
-	 * Constructor initializes location provider services.
-	 * @param pContext
+	 * DANGER: STATIC INITIALIZER!
+	 * Since most of the stuff this class is doing is static things, static
+	 * initializer can do the job. Advantages of this approach, IMHO, are that
+	 * I don't need to call a constructor. Disadvantages -- we'll see in the 
+	 * future, because now I can't think of any.
 	 */
-	public CoordinatesProvider(Context pContext) {
-		CoordinatesProvider.context = pContext;
-
+	static {
+		CoordinatesProvider.mContext = GeoSpy.getAppContext();
 		// Acquire a reference to the system Location Manager
-		CoordinatesProvider.locationManager = 
-				(LocationManager) pContext.getSystemService
-				(Context.LOCATION_SERVICE);
-
+		CoordinatesProvider.mLocationManager = 
+				(LocationManager) CoordinatesProvider
+				.mContext.getSystemService(Context.LOCATION_SERVICE);
 		// Define a listener that responds to location updates
-		CoordinatesProvider.locationListener = new LocationListener() {
+		CoordinatesProvider.mLocationListener = new LocationListener() {
 			@Override
 			public void onLocationChanged(Location location) {
 				// Called when a new location is found by the network location
@@ -45,18 +47,18 @@ public class CoordinatesProvider {
 				// the current location in the DB
 				
 				DBAdapter aDBAdapter = 
-						new DBAdapter(CoordinatesProvider.context);
+						new DBAdapter(CoordinatesProvider.mContext);
 				long modifiedLatitude = 
 						(long) (location.getLatitude() * 1000000);
 				long modifiedLongitude = 
 						(long) (location.getLongitude() * 1000000);
-				if (NetworkManager.isNetworkAvailable(context)) {
+				if (NetworkManager.isNetworkAvailable(mContext)) {
 					// available network
 					// send current location
 					// sync all unsyced
 					// TODO: send a list or every location a piece.
 					LocationObject aLocationObject = 
-							new LocationObject(IMEIProvider.getIMEI(context),
+							new LocationObject(IMEIProvider.getIMEI(mContext),
 									String.valueOf(modifiedLatitude),
 									String.valueOf(modifiedLongitude),
 									String.valueOf(location.getTime()));
@@ -70,13 +72,17 @@ public class CoordinatesProvider {
 					for (LocationObject aLocation : locations) {
 						LocationSender.sendLocation(aLocation);
 					}
-					Toast.makeText(context, "Network is available", Toast.LENGTH_LONG).show();
+					Toast.makeText(mContext, 
+							"Network is available", 
+							Toast.LENGTH_SHORT).show();
 				} else {
 					// no network connection. store location in the DB.
 					aDBAdapter.storeLocation(modifiedLatitude,
 							modifiedLongitude, 
 							location.getTime());
-					Toast.makeText(context, "No Network", Toast.LENGTH_LONG).show();
+					Toast.makeText(mContext, 
+							"No Network. Stored in DB.", 
+							Toast.LENGTH_SHORT).show();
 				}
 				
 			}
@@ -84,37 +90,49 @@ public class CoordinatesProvider {
 			@Override
 			public void onStatusChanged(String provider, int status,
 					Bundle extras) {
-				Toast.makeText(CoordinatesProvider.context,
-						"onStatusChanged", Toast.LENGTH_LONG).show();
+				Toast.makeText(CoordinatesProvider.mContext,
+						"onStatusChanged", Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
 			public void onProviderEnabled(String provider) {
-				Toast.makeText(CoordinatesProvider.context,
-						"onProviderEnabled", Toast.LENGTH_LONG).show();
+				Toast.makeText(CoordinatesProvider.mContext,
+						"onProviderEnabled", Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
 			public void onProviderDisabled(String provider) {
-				Toast.makeText(CoordinatesProvider.context,
-						"onProviderDisabled", Toast.LENGTH_LONG).show();
+				Toast.makeText(CoordinatesProvider.mContext,
+						"onProviderDisabled", Toast.LENGTH_SHORT).show();
 			}
 		};
 
-		/*
-		 *  Register the listener with the Location Manager to receive
-		 *  location updates. Currently using both.
-		 */
-		CoordinatesProvider.locationManager.requestLocationUpdates(
+		CoordinatesProvider.enableLocationListener();
+				
+	}
+	
+	/**
+	 * Constructor initializes location provider services.
+	 * @param pContext
+	 */
+	private CoordinatesProvider(Context pContext) {
+		CoordinatesProvider.mContext = pContext;
+	}
+	/*
+	 *  Register the listener with the Location Manager to receive
+	 *  location updates. Currently using both.
+	 */
+	private static void enableLocationListener() {
+		CoordinatesProvider.mLocationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER,
-				60, // minimum time interval between notifications	
+				60000, // minimum time interval between notifications	
 				0, // minimum change in distance between notifications
-				locationListener);
-		CoordinatesProvider.locationManager.requestLocationUpdates(
+				mLocationListener);
+		CoordinatesProvider.mLocationManager.requestLocationUpdates(
 				LocationManager.NETWORK_PROVIDER, 
-				60,	
+				60000,	
 				0, 
-				locationListener);
+				mLocationListener);
 	}
 	/**
 	 * Get last known GPS location. If there is a GPS location available, then
@@ -124,23 +142,32 @@ public class CoordinatesProvider {
 	 */
 	public static Location getLocation() {
 		Location aLocation = 
-				CoordinatesProvider.locationManager.getLastKnownLocation
+				CoordinatesProvider.mLocationManager.getLastKnownLocation
 				(LocationManager.GPS_PROVIDER);
 		if (null == aLocation) {
 			aLocation = 
-					CoordinatesProvider.locationManager.getLastKnownLocation
+					CoordinatesProvider.mLocationManager.getLastKnownLocation
 					(LocationManager.NETWORK_PROVIDER);
 		}
 		return aLocation;
 	}
 
 	/**
-	 * Turn of receiving updates about location.
+	 * Turn of receiving updates about device's location.
 	 */
 	public static void stopUpdates() {
-		if (null != CoordinatesProvider.locationListener) {
-			locationManager.removeUpdates(CoordinatesProvider.locationListener);
+		if (null != CoordinatesProvider.mLocationListener) {
+			mLocationManager
+			.removeUpdates(CoordinatesProvider.mLocationListener);
 		}
+	}
+	
+	/**
+	 * Start receiving location updates.
+	 */
+	public static void startUpdates() {
+//		CoordinatesProvider.mLocationManager.isProviderEnabled(provider)
+		CoordinatesProvider.enableLocationListener();
 	}
 
 }

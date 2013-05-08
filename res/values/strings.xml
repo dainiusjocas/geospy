@@ -7,7 +7,9 @@
         settings of location services press Menu button. 
     </string>
     <string name="gps">GPS</string>
-    <string name="get_location">Get Location</string>
+    <string name="get_location">Get Current Location</string>
     <string name="check_network">Check Network</string>
+    <string name="start_spying">Start</string>
+    <string name="stop_spying">Stop</string>
 
 </resources>
