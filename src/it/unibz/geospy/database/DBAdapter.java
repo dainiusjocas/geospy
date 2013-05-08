@@ -184,8 +184,8 @@ public class DBAdapter {
 		this.open();
 		mDb.update(LOCATION_TABLE_TITLE,
 				updateValues, 
-				"LOCATION_IS_SYNC=?", 
-				whereArgs);
+				LOCATION_IS_SYNC+ "=" + "0", 
+				null);
 		this.close();
 	}
 }

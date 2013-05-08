@@ -119,7 +119,7 @@ public class LocationSpy extends Activity {
             	} else {
             		message = message + " not available";
             	}
-            	message = message + "|" + LocationSender.getInterval();
+            	message = message + "| timeout=" + LocationSender.getInterval();
             	Toast.makeText(aContext, message, Toast.LENGTH_SHORT).show();
 
             }

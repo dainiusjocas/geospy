@@ -90,20 +90,20 @@ public class CoordinatesProvider {
 			@Override
 			public void onStatusChanged(String provider, int status,
 					Bundle extras) {
-				Toast.makeText(CoordinatesProvider.mContext,
-						"onStatusChanged", Toast.LENGTH_SHORT).show();
+/*				Toast.makeText(CoordinatesProvider.mContext,
+						"onStatusChanged", Toast.LENGTH_SHORT).show();*/
 			}
 
 			@Override
 			public void onProviderEnabled(String provider) {
 				Toast.makeText(CoordinatesProvider.mContext,
-						"onProviderEnabled", Toast.LENGTH_SHORT).show();
+						"GPS is enabled", Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
 			public void onProviderDisabled(String provider) {
 				Toast.makeText(CoordinatesProvider.mContext,
-						"onProviderDisabled", Toast.LENGTH_SHORT).show();
+						"GPS is not enabled", Toast.LENGTH_SHORT).show();
 			}
 		};
 
