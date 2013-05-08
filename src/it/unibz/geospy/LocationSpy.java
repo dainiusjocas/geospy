@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -24,45 +25,65 @@ import android.widget.Toast;
  */
 public class LocationSpy extends Activity {
 
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_spy);
         CoordinatesProvider.startUpdates();
         final Context aContext = this.getApplicationContext();
+        final TextView description = (TextView) findViewById(R.id.textView1);
+        final TextView status = (TextView) findViewById(R.id.textView2);
         
         /*
-         * Start spying
+         * Start and stop button configuration:
+         * - start -- enabled
+         * - stop -- disabled
          */
-        final Button aStartButton = (Button) findViewById(R.id.button1);
+        final Button aStartButton = (Button) findViewById(R.id.start_button);
+        final Button aStopButton = (Button) findViewById(R.id.stop_button);
+        aStopButton.setEnabled(false);
+        
         aStartButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				CoordinatesProvider.startUpdates();
 				Toast.makeText(aContext,
-						"Spying started", 
+						"Data collection started", 
 						Toast.LENGTH_SHORT).show();
+				// disable start button
+				aStartButton.setEnabled(false);
+				//enable stop button
+				aStopButton.setEnabled(true);
+				// status is enabled
+				status.setText(R.string.started);
 			}
 		});
         /*
          * Stop spying button
          */
-        final Button aStopButton = (Button) findViewById(R.id.button4);
+        
         aStopButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				CoordinatesProvider.stopUpdates();
 				Toast.makeText(getApplicationContext(), 
-		    			"To conserve battery you may want to manage location services",
+		    			"Data Collection stoped",
 		    			Toast.LENGTH_SHORT).show();
+				// disable stop button
+				aStopButton.setEnabled(false);
+				//enable start button
+				aStartButton.setEnabled(true);
+				// status is not_started
+				status.setText(R.string.not_started);
 			}
 		});
         /*
          * Get the latest location 
          */
-        final Button button_location = (Button) findViewById(R.id.button2);
+        final Button button_location = (Button) findViewById(R.id.get_location);
         button_location.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	String anIMEI = IMEIProvider.getIMEI(aContext);
@@ -78,7 +99,7 @@ public class LocationSpy extends Activity {
         /*
          * Check if network is available
          */
-        final Button button_network = (Button) findViewById(R.id.button3);
+        final Button button_network = (Button) findViewById(R.id.check_network);
         button_network.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	boolean networkAvailable = 
